@@ -1,92 +1,65 @@
-# nivesh
+# Nivesh — Your Indian Equity Concierge
+> A personal AI agent for Indian retail investors built with
+> Google ADK + Gemini 2.0 Flash
 
-Simple ReAct agent
-Agent generated with `agents-cli` version `0.6.1`
+## Disclaimer
+Nivesh is a demonstration project. It does not provide financial advice. Always consult a SEBI-registered advisor before making investment decisions.
 
-## Project Structure
+## The Problem
+Modern Indian retail investors are flooded with news headlines, technical charts, and social media speculation across numerous platforms. This sheer volume of unfiltered data frequently leads to decision fatigue rather than confident decision-making. Investors do not need more raw feeds; they need clear, reasoned, and contextual answers regarding their specific stocks to navigate the markets efficiently.
 
-```
-nivesh/
-├── app/         # Core agent code
-│   ├── agent.py               # Main agent logic
-│   ├── fast_api_app.py        # FastAPI Backend server
-│   └── app_utils/             # App utilities and helpers
-├── tests/                     # Unit, integration, and load tests
-├── GEMINI.md                  # AI-assisted development guide
-└── pyproject.toml             # Project dependencies
-```
+## The Solution
+Nivesh acts as a direct, data-driven personal equity concierge that filters out the noise. By combining real-time NSE price feeds with recent financial news, it reasons across the investor's current watchlist before formulating a response. Nivesh answers user queries like a personal equity research analyst rather than a generic search engine, giving investors clarity on their portfolio at a glance.
 
-> 💡 **Tip:** Use [Antigravity CLI](https://antigravity.google/) for AI-assisted development - project context is pre-configured in `GEMINI.md`.
+## Architecture
+![Nivesh Architecture](assets/Architecture.png)
 
-## Requirements
+The agent loop:
+1. User sends a query via Gradio chat interface
+2. Google ADK Runner orchestrates the session
+3. Gemini 2.0 Flash decides which tools to call
+4. Tools fetch real data (prices via yfinance, news via Google News RSS, watchlist from session memory)
+5. Gemini synthesizes a reasoned, personalized response
+6. Agent Thinking panel shows every tool call with timing
 
-Before you begin, ensure you have:
-- **uv**: Python package manager (used for all dependency management in this project) - [Install](https://docs.astral.sh/uv/getting-started/installation/) ([add packages](https://docs.astral.sh/uv/concepts/dependencies/) with `uv add <package>`)
-- **agents-cli**: Agents CLI - Install with `uv tool install google-agents-cli`
-- **Google Cloud SDK**: For GCP services - [Install](https://cloud.google.com/sdk/docs/install)
+## Agent Capabilities
+| Tool | Description |
+|---|---|
+| get_stock_price | Live NSE price via yfinance (.NS suffix) |
+| get_stock_news | Top 3 headlines via Google News RSS |
+| get_watchlist | Returns user's current watchlist |
+| add_to_watchlist | Adds a stock (explicit user command only) |
+| remove_from_watchlist | Removes a stock from watchlist |
 
+## Example Queries
+- "What is RELIANCE trading at right now?"
+- "Should I be worried about my portfolio today?"
+- "Add BAJAJFINSV to my watchlist"
+- "Latest news on TCS"
+- "How is my watchlist performing?"
+
+## Tech Stack
+- Google ADK (agent framework)
+- Gemini 2.0 Flash (LLM)
+- agents-cli (scaffolding + project tooling)
+- Gradio (UI)
+- yfinance (live NSE stock prices)
+- Google News RSS (recent headlines)
+- Antigravity IDE (vibe coding environment)
 
 ## Quick Start
-
-Install `agents-cli` and its skills if not already installed:
-
 ```bash
-uvx google-agents-cli setup
+git clone https://github.com/TYogesh12/Nivesh
+cd Nivesh
+cp .env.example .env
+# Add your GOOGLE_API_KEY to .env
+uv sync
+uv run python app.py
 ```
 
-Install required packages:
-
-```bash
-agents-cli install
-```
-
-Test the agent with a local web server:
-
-```bash
-agents-cli playground
-```
-
-You can also use features from the [ADK](https://adk.dev/) CLI with `uv run adk`.
-
-## Commands
-
-| Command              | Description                                                                                 |
-| -------------------- | ------------------------------------------------------------------------------------------- |
-| `agents-cli install` | Install dependencies using uv                                                         |
-| `agents-cli playground` | Launch local development environment                                                  |
-| `agents-cli lint`    | Run code quality checks                                                               |
-| `agents-cli eval`    | Evaluate agent behavior (generate, grade, analyze, and more — see `agents-cli eval --help`) |
-| `uv run pytest tests/unit tests/integration` | Run unit and integration tests                                                        || [A2A Inspector](https://github.com/a2aproject/a2a-inspector) | Launch A2A Protocol Inspector                                                        |
-
-## 🛠️ Project Management
-
-| Command | What It Does |
-|---------|--------------|
-| `agents-cli scaffold enhance` | Add CI/CD pipelines and Terraform infrastructure |
-| `agents-cli infra cicd` | One-command setup of entire CI/CD pipeline + infrastructure |
-| `agents-cli scaffold upgrade` | Auto-upgrade to latest version while preserving customizations |
-
----
-
-## Development
-
-Edit your agent logic in `app/agent.py` and test with `agents-cli playground` - it auto-reloads on save.
-
-## Deployment
-
-```bash
-gcloud config set project <your-project-id>
-agents-cli deploy
-```
-
-To add CI/CD and Terraform, run `agents-cli scaffold enhance`.
-To set up your production infrastructure, run `agents-cli infra cicd`.
-
-## Observability
-
-Built-in telemetry exports to Cloud Trace, BigQuery, and Cloud Logging.
-
-## A2A Inspector
-
-This agent supports the [A2A Protocol](https://a2a-protocol.org/). Use the [A2A Inspector](https://github.com/a2aproject/a2a-inspector) to test interoperability.
-See the [A2A Inspector docs](https://github.com/a2aproject/a2a-inspector) for details.
+## Course Concepts Demonstrated
+- Agent system with Google ADK
+- Tool use and function calling
+- Session memory with InMemorySessionService
+- Security via explicit tool call restrictions in docstrings
+- Built with agents-cli and Antigravity IDE
