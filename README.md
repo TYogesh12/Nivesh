@@ -12,8 +12,6 @@ Modern Indian retail investors are flooded with news headlines, technical charts
 Nivesh acts as a direct, data-driven personal equity concierge that filters out the noise. By combining real-time NSE price feeds with recent financial news, it reasons across the investor's current watchlist before formulating a response. Nivesh answers user queries like a personal equity research analyst rather than a generic search engine, giving investors clarity on their portfolio at a glance.
 
 ## Architecture
-![Nivesh Architecture](assets/Architecture.png)
-## Architecture
 
 ```mermaid
 flowchart TD
