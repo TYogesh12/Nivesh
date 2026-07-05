@@ -45,6 +45,10 @@ if os.environ.get("GOOGLE_GENAI_USE_VERTEXAI") is None:
 watchlist = ["RELIANCE", "INFY", "TCS", "HDFCBANK", "WIPRO"]
 
 
+# PURPOSE: Fetches the current live stock price for a given ticker symbol.
+# DESIGN: Uses yfinance with a '.NS' (NSE) suffix to support free NSE data. Alpha Vantage free tier only supports BSE data via '.BSE' suffixes, whereas yfinance provides comprehensive NSE coverage.
+# TRADEOFF: yfinance is an unofficial scraper-based library, which makes it subject to sudden rate-limits or format breakages.
+# BEHAVIOR: Automatically converts symbols to uppercase and appends '.NS' if not present.
 def get_stock_price(symbol: str) -> dict:
     """Fetches the live stock price for a given symbol from NSE India.
 
@@ -81,6 +85,10 @@ def get_stock_price(symbol: str) -> dict:
         return {"symbol": symbol, "error": f"Failed to fetch price: {str(e)}"}
 
 
+# PURPOSE: Fetches the top 3 headlines from Google News RSS feed for a given stock symbol.
+# DESIGN: Parses an XML RSS feed via urllib and xml.etree to avoid heavy external RSS parsing dependencies.
+# TRADEOFF: Google News RSS headlines are recent but may be days old, not strictly real-time.
+# BEHAVIOR: Returns a list of dictionaries with title, link, and pubDate keys.
 def get_stock_news(symbol: str) -> dict:
     """Fetches the top 3 headlines from Google News RSS for a given Indian stock.
 
@@ -123,6 +131,10 @@ def get_stock_news(symbol: str) -> dict:
         return {"symbol": symbol, "error": f"Failed to fetch news: {str(e)}"}
 
 
+# PURPOSE: Returns the current list of watched stock symbols.
+# DESIGN: Returns a dictionary wrapping the mutable in-memory watchlist. The docstring restricts tool invocation to prevent the LLM from calling it on general queries.
+# TRADEOFF: In-memory storage is volatile and will reset upon process restarts.
+# BEHAVIOR: The LLM should only call this when the user explicitly inquires about their watchlist or portfolio status.
 def get_watchlist() -> dict:
     """Returns a list of watched stock symbols.
 
@@ -132,6 +144,10 @@ def get_watchlist() -> dict:
     return {"watchlist": watchlist}
 
 
+# PURPOSE: Adds a new stock symbol to the user's watchlist.
+# DESIGN: Standardizes the symbol to uppercase and appends to the in-memory list if it does not already exist. The docstring restricts tool invocation to prevent accidental model actions.
+# TRADEOFF: Does not validate symbol validity against exchanges during addition.
+# BEHAVIOR: The LLM must only call this upon receiving an explicit instruction from the user to add a stock.
 def add_to_watchlist(symbol: str) -> dict:
     """Adds a stock symbol to the user's watchlist.
         Appends symbol.upper() to watchlist if not already present.
@@ -148,6 +164,10 @@ def add_to_watchlist(symbol: str) -> dict:
     return {"message": f"{sym} already in watchlist", "watchlist": watchlist}
 
 
+# PURPOSE: Removes a stock symbol from the user's watchlist.
+# DESIGN: Standardizes the symbol to uppercase and removes it from the in-memory list if present. The docstring restricts tool invocation to avoid accidental model actions.
+# TRADEOFF: Silent failure response if the stock symbol is not in the watchlist.
+# BEHAVIOR: The LLM must only call this upon receiving an explicit instruction from the user to remove a stock, or if a user confirms removal of an invalid stock.
 def remove_from_watchlist(symbol: str) -> dict:
     """Removes symbol.upper() from the user's watchlist.
        Only call this when the user EXPLICITLY asks to remove a stock
