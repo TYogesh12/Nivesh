@@ -13,6 +13,29 @@ Nivesh acts as a direct, data-driven personal equity concierge that filters out 
 
 ## Architecture
 ![Nivesh Architecture](assets/Architecture.png)
+## Architecture
+
+```mermaid
+flowchart TD
+    A[User] -->|query| B[Gradio UI\nChat + Agent Thinking panel]
+    B -->|message| C[Google ADK Runner\nOrchestrates agent loop]
+    C -->|prompt + tools| D[Gemini 2.0 Flash\nReasons + decides tool calls]
+    D -->|tool call| E[get_stock_price\nyfinance + NSE]
+    D -->|tool call| F[get_stock_news\nGoogle News RSS]
+    D -->|tool call| G[get_watchlist\nadd / remove / list]
+    E -->|price data| C
+    F -->|headlines| C
+    G -->|watchlist| C
+    C -->|response| B
+    B -->|answer| A
+
+    style D fill:#854F0B,color:#FAC775
+    style C fill:#0F6E56,color:#9FE1CB
+    style B fill:#534AB7,color:#CECBF6
+    style E fill:#185FA5,color:#B5D4F4
+    style F fill:#185FA5,color:#B5D4F4
+    style G fill:#185FA5,color:#B5D4F4
+```
 
 The agent loop:
 1. User sends a query via Gradio chat interface
