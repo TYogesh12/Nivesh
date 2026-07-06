@@ -446,15 +446,18 @@ with gr.Blocks(css=css, fill_height=True) as demo:
         )
 
     # Event handlers
+    temp_msg = gr.State()
+
+    def store_and_clear(message):
+        return message, ""
+
     submit_event = msg.submit(
-        respond, inputs=[msg, chatbot], outputs=[chatbot, thinking_panel]
-    )
-    submit_event.then(lambda: "", outputs=[msg])
+        store_and_clear, inputs=[msg], outputs=[temp_msg, msg]
+    ).then(respond, inputs=[temp_msg, chatbot], outputs=[chatbot, thinking_panel])
 
     btn_event = send_btn.click(
-        respond, inputs=[msg, chatbot], outputs=[chatbot, thinking_panel]
-    )
-    btn_event.then(lambda: "", outputs=[msg])
+        store_and_clear, inputs=[msg], outputs=[temp_msg, msg]
+    ).then(respond, inputs=[temp_msg, chatbot], outputs=[chatbot, thinking_panel])
 
     clear_btn.click(
         lambda: ([], "### Agent Thinking\n\nWaiting for your question."),
