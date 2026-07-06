@@ -186,7 +186,7 @@ def remove_from_watchlist(symbol: str) -> dict:
 root_agent = Agent(
     name="paisa_agent",
     model=Gemini(
-        model="gemini-2.5-flash-lite",
+        model="gemini-3.1-flash-lite",
         retry_options=types.HttpRetryOptions(attempts=3),
     ),
     instruction=(
