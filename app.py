@@ -431,16 +431,18 @@ with gr.Blocks(css=css, fill_height=True) as demo:
                 sanitize_html=False,
             )
     with gr.Row(elem_classes=["input-row"]):
-        msg = gr.Textbox(
-            placeholder="Ask about your stocks or watchlist...",
-            lines=1,
-            max_lines=3,
-            scale=8,
-            elem_classes=["chat-input"],
-            show_label=False,
-        )
-        send_btn = gr.Button("Ask →", scale=1, elem_classes=["send-btn"])
-        clear_btn = gr.Button("Clear", scale=1, elem_classes=["clear-btn"])
+        with gr.Column(scale=65, min_width=500):
+            msg = gr.Textbox(
+                placeholder="Ask about your stocks or watchlist...",
+                lines=1,
+                max_lines=3,
+                elem_classes=["chat-input"],
+                show_label=False,
+            )
+        with gr.Column(scale=35, min_width=300):
+            with gr.Row():
+                send_btn = gr.Button("Ask →", elem_classes=["send-btn"])
+                clear_btn = gr.Button("Clear", elem_classes=["clear-btn"])
 
     with gr.Row(elem_classes=["disclaimer-row"]):
         gr.HTML(
