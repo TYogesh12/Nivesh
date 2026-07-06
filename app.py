@@ -357,6 +357,8 @@ async def respond(message, history):
         {"role": "assistant", "content": ""},
     ]
 
+    yield history, gr.update()
+
     new_msg = types.Content(role="user", parts=[types.Part.from_text(text=message)])
 
     try:
