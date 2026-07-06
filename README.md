@@ -1,6 +1,6 @@
 # Nivesh — Your Indian Equity Concierge
 > A personal AI agent for Indian retail investors built with
-> Google ADK + Gemini 2.0 Flash
+> Google ADK + Gemini 3.1 Flash Lite
 
 ## Disclaimer
 Nivesh is a demonstration project. It does not provide financial advice. Always consult a SEBI-registered advisor before making investment decisions.
