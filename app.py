@@ -357,8 +357,6 @@ async def respond(message, history):
         {"role": "assistant", "content": ""},
     ]
 
-    yield history, render_thinking_md(tool_logs)
-
     new_msg = types.Content(role="user", parts=[types.Part.from_text(text=message)])
 
     try:
@@ -369,16 +367,19 @@ async def respond(message, history):
             run_config=RunConfig(streaming_mode=StreamingMode.SSE),
         ):
             # Always accumulate text if present
-            if event.content and event.content.parts:
+            if (
+                event.content
+                and event.content.parts
+                and getattr(event, "partial", True)
+            ):
                 for part in event.content.parts:
                     if part.text:
                         bot_message += part.text
-                        history[-1]["content"] = bot_message
-
-            # STREAMING FIX: yield on EVERY event so Agent Thinking panel
-            # updates live on tool_call_start / tool_call_end events,
-            # not just when text chunks arrive.
-            yield history, gr.update()
+                        updated_history = history[:-1] + [
+                            {"role": "assistant", "content": bot_message}
+                        ]
+                        yield updated_history, gr.update()
+        history = history[:-1] + [{"role": "assistant", "content": bot_message}]
         # Incremental replay of tool calls for visual effect
         displayed_logs = []
         for log in tool_logs:
@@ -391,7 +392,7 @@ async def respond(message, history):
             bot_message = (
                 "I couldn't generate a response. Please try rephrasing your question."
             )
-            history[-1]["content"] = bot_message
+            history = history[:-1] + [{"role": "assistant", "content": bot_message}]
             yield history, render_thinking_md(tool_logs)
 
     except Exception as e:
@@ -407,7 +408,7 @@ async def respond(message, history):
             bot_message = "⚠️ **Gemini API rate limit reached.** You've exhausted your free-tier daily quota (20 req/day). Please wait until midnight UTC or use a billing-enabled API key."
         else:
             bot_message = f"❌ Error: {err_str[:200]}"
-        history[-1]["content"] = bot_message
+        history = history[:-1] + [{"role": "assistant", "content": bot_message}]
 
 
 # Build Gradio UI
